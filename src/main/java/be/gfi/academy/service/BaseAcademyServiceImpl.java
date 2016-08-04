@@ -2,8 +2,16 @@ package be.gfi.academy.service;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import be.gfi.academy.dao.AcademyDAO;
 
 public class BaseAcademyServiceImpl implements AcademyService {
+
+	@Autowired
+	private AcademyDAO dao;
 
 	@Override
 	public String getGreeting() {
@@ -13,5 +21,10 @@ public class BaseAcademyServiceImpl implements AcademyService {
 
 	protected Date getNow() {
 		return new Date();
+	}
+
+	@Override
+	public List<String> listMessages() {
+		return dao.listMessages();
 	}
 }

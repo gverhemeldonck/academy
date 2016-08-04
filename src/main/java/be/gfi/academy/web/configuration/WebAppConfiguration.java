@@ -1,11 +1,23 @@
 package be.gfi.academy.web.configuration;
 
-import org.springframework.beans.factory.annotation.Value;
+import java.util.Properties;
+
+import javax.persistence.EntityManagerFactory;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
+import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.orm.jpa.JpaVendorAdapter;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
@@ -13,6 +25,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
+import be.gfi.academy.dao.AcademyDAO;
+import be.gfi.academy.dao.BaseAcademyDAOImpl;
 import be.gfi.academy.service.AcademyService;
 import be.gfi.academy.service.BaseAcademyServiceImpl;
 
@@ -22,22 +36,14 @@ import be.gfi.academy.service.BaseAcademyServiceImpl;
  * @author Gunther Verhemeldonck
  */
 @Configuration
-@EnableWebMvc
-@ComponentScan(basePackages = "be.gfi.academy.web")
 @PropertySource("classpath:application.properties")
+@EnableWebMvc
+@EnableTransactionManagement
+@ComponentScan(basePackages = "be.gfi.academy.web")
 public class WebAppConfiguration extends WebMvcConfigurerAdapter {
 
-	@Value("${driverClassName}")
-	private String driverClassName;
-
-	@Value("${databaseUrl}")
-	private String databaseUrl;
-
-	@Value("${databaseUsername}")
-	private String databaseUsername;
-
-	@Value("${databasePassword}")
-	private String databasePassword;
+	@Autowired
+	private Environment env;
 
 	@Override
 	public void addViewControllers(ViewControllerRegistry registry) {
@@ -46,11 +52,6 @@ public class WebAppConfiguration extends WebMvcConfigurerAdapter {
 		registry.addViewController("/hello").setViewName("hello");
 		registry.addViewController("/login").setViewName("login");
 		registry.addViewController("/403").setViewName("403");
-	}
-
-	@Bean
-	public AcademyService academyService() {
-		return new BaseAcademyServiceImpl();
 	}
 
 	@Bean
@@ -63,12 +64,54 @@ public class WebAppConfiguration extends WebMvcConfigurerAdapter {
 	}
 
 	@Bean
+	public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+		LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
+		em.setDataSource(dataSource());
+		em.setPackagesToScan(new String[] { "be.gfi.academy.model" });
+
+		JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+		em.setJpaVendorAdapter(vendorAdapter);
+		em.setJpaProperties(additionalProperties());
+
+		return em;
+	}
+
+	@Bean
 	public DriverManagerDataSource dataSource() {
 		DriverManagerDataSource ds = new DriverManagerDataSource();
-		ds.setDriverClassName(driverClassName);
-		ds.setUrl(databaseUrl);
-		ds.setUsername(databaseUsername);
-		ds.setPassword(databasePassword);
+		ds.setDriverClassName(env.getProperty("driverClassName"));
+		ds.setUrl(env.getProperty("databaseUrl"));
+		ds.setUsername(env.getProperty("databaseUsername"));
+		ds.setPassword(env.getProperty("databasePassword"));
 		return ds;
+	}
+
+	@Bean
+	public PlatformTransactionManager transactionManager(EntityManagerFactory emf) {
+		JpaTransactionManager transactionManager = new JpaTransactionManager();
+		transactionManager.setEntityManagerFactory(emf);
+		return transactionManager;
+	}
+
+	@Bean
+	public PersistenceExceptionTranslationPostProcessor exceptionTranslation() {
+		return new PersistenceExceptionTranslationPostProcessor();
+	}
+
+	Properties additionalProperties() {
+		Properties properties = new Properties();
+		properties.setProperty("hibernate.hbm2ddl.auto", "validate");
+		properties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL5Dialect");
+		return properties;
+	}
+
+	@Bean
+	public AcademyService academyService() {
+		return new BaseAcademyServiceImpl();
+	}
+
+	@Bean
+	public AcademyDAO academyDAO() {
+		return new BaseAcademyDAOImpl();
 	}
 }
