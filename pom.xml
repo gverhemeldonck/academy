@@ -5,7 +5,7 @@
 	<artifactId>academy-wa</artifactId>
 	<packaging>war</packaging>
 	<version>01.00.0-SNAPSHOT</version>
-	<name>Web Application</name>
+	<name>Academy Web Application</name>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -84,7 +84,7 @@
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 			<version>6.0.3</version>
-			<scope>provided</scope>
+			<!-- <scope>provided</scope> Heroku needs it -->
 		</dependency>
 
 		<!-- TEST -->
@@ -94,7 +94,6 @@
 			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
-
 	</dependencies>
 
 	<build>
@@ -120,8 +119,16 @@
 				<artifactId>maven-resources-plugin</artifactId>
 				<version>3.0.1</version>
 			</plugin>
+			<plugin>
+				<groupId>com.heroku.sdk</groupId>
+				<artifactId>heroku-maven-plugin</artifactId>
+				<version>1.0.3</version>
+				<configuration>
+					<appName>gfi-academy</appName>
+				</configuration>
+			</plugin>
 		</plugins>
-		
+
 		<!-- Copy and filter resources (maven-resources-plugin) -->
 		<resources>
 			<resource>
@@ -129,5 +136,41 @@
 				<filtering>true</filtering>
 			</resource>
 		</resources>
-	</build>	
+	</build>
+
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>cobertura-maven-plugin</artifactId>
+				<version>2.7</version>
+				<configuration>
+					<executions>
+						<execution>
+							<goals>
+								<goal>clean</goal>
+							</goals>
+						</execution>
+					</executions>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<version>2.17</version>
+				<reportSets>
+					<reportSet>
+						<reports>
+							<report>checkstyle</report>
+						</reports>
+					</reportSet>
+				</reportSets>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-pmd-plugin</artifactId>
+				<version>3.6</version>
+			</plugin>
+		</plugins>
+	</reporting>
 </project>
