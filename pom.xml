@@ -128,26 +128,24 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<artifactId>maven-clean-plugin</artifactId>
-				<version>2.5</version>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.3</version>
 				<executions>
 					<execution>
-						<id>clean-jar-artifacts</id>
-						<phase>install</phase>
+						<phase>package</phase>
 						<goals>
-							<goal>clean</goal>
+							<goal>copy</goal>
 						</goals>
 						<configuration>
-							<excludeDefaultDirectories>true</excludeDefaultDirectories>
-							<filesets>
-								<fileset>
-									<directory>target</directory>
-									<excludes>
-										<exclude>*.war</exclude>
-										<exclude>dependency/*.jar</exclude>
-									</excludes>
-								</fileset>
-							</filesets>
+							<artifactItems>
+								<artifactItem>
+									<groupId>com.github.jsimone</groupId>
+									<artifactId>webapp-runner</artifactId>
+									<version>8.0.33.1</version>
+									<destFileName>webapp-runner.jar</destFileName>
+								</artifactItem>
+							</artifactItems>
 						</configuration>
 					</execution>
 				</executions>
