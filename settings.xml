@@ -6,10 +6,10 @@
     <profile>
       <id>heroku</id>
       <properties>
-      	<jdbc.driver.classname>${env.jdbc.driver.classname}</jdbc.driver.classname>
-        <jdbc.url>${env.jdbc.url}</jdbc.url>
-        <jdbc.username>${env.jdbc.username}</jdbc.username>
-        <jdbc.password>${env.jdbc.password}</jdbc.password>
+      	<jdbc.driver.classname>${classname}</jdbc.driver.classname>
+        <jdbc.url>${url}</jdbc.url>
+        <jdbc.username>${username}</jdbc.username>
+        <jdbc.password>${password}</jdbc.password>
       </properties>
     </profile>
   </profiles>
