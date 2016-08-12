@@ -18,6 +18,14 @@ public class Message {
 	@Column
 	private String message;
 
+	public Message() {
+	}
+
+	public Message(long id, String msg) {
+		this.id = id;
+		this.message = msg;
+	}
+
 	public long getId() {
 		return id;
 	}
