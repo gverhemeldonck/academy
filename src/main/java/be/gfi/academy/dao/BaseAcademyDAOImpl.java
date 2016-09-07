@@ -8,6 +8,8 @@ import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
 
+import be.gfi.academy.model.Message;
+
 @Repository
 @SuppressWarnings("unchecked")
 public class BaseAcademyDAOImpl implements AcademyDAO {
@@ -16,7 +18,7 @@ public class BaseAcademyDAOImpl implements AcademyDAO {
 	private EntityManager entityManager;
 
 	@Override
-	public List<String> listMessages() {
+	public List<Message> listMessages() {
 		Query query = entityManager.createQuery("from Message");
 		return query.getResultList();
 	}
