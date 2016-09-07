@@ -23,7 +23,7 @@ public class HomeController {
 		_log.info("Saying hello ...");
 
 		model.addAttribute("message", service.getGreeting());
-		model.addAttribute("messages", service.listMessages());
+		model.addAttribute("messages", service.listMessages(null));
 		return "hello";
 	}
 

@@ -14,7 +14,7 @@
 	 <logger name="org.hibernate" level="WARN"/>
 
 	<root>
-		<level value="INFO" />
+		<level value="WARN" />
 		<appender-ref ref="consoleAppender" />
 	</root>
 </configuration>

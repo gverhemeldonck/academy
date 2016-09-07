@@ -5,7 +5,8 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -19,6 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import be.gfi.academy.model.Message;
 import be.gfi.academy.service.AcademyService;
 import be.gfi.academy.web.configuration.AcademyWebAppConfiguration;
 
@@ -46,13 +48,14 @@ public class TestHomeController {
 
 	@Test
 	public void listAll() throws Exception {
-
-		when(mockService.listMessages()).thenReturn(Arrays.asList("Foo", "Bar"));
+		final List<Message> messages = new ArrayList<Message>(2);
+		messages.add(new Message(1, "Foo"));
+		messages.add(new Message(2, "Bar"));
+		when(mockService.listMessages(null)).thenReturn(messages);
 
 		mockMvc.perform(get("/hello")).andExpect(status().isOk()).andExpect(view().name("hello"))
-				.andExpect(forwardedUrl("/WEB-INF/views/hello.jsp"))
 				.andExpect(model().attribute("messages", hasSize(2)));
 
-		verify(mockService, times(1)).listMessages();
+		verify(mockService, times(1)).listMessages(null);
 	}
 }
